@@ -7,7 +7,6 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// middleware
 app.use(cors());
 app.use(express.json());
 
@@ -25,17 +24,14 @@ async function run() {
         const usersCollection = database.collection("users");
 
 
-        // USERS API HANDLING //
 
-
-        // POSTING USER
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
             console.log(result);
             res.json(result);
         });
-        // CHECKING ADMIN
+
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
@@ -46,7 +42,7 @@ async function run() {
             }
             res.json({ admin: isAdmin });
         })
-        // MAKING USER ADMIN
+
         app.put('/users/admin', async (req, res) => {
             const user = req.body;
             const filter = { email: user.email, password: user.password };
@@ -55,32 +51,27 @@ async function run() {
             res.json(result);
         })
 
-        //////////////////////////////////
 
 
-        // mobileS API HANDLING //
-
-
-        // GETTING mobileS DATA
         app.get('/mobiles', async (req, res) => {
             const cursor = mobilesCollection.find({});
             const mobiles = await cursor.toArray();
             res.send(mobiles);
         })
-        // GETTING SINGLE mobile DATA
+
         app.get('/mobiles/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const mobiles = await mobilesCollection.findOne(query);
             res.send(mobiles);
         })
-        // POST mobile DATA
+
         app.post('/mobiles', async (req, res) => {
             const mobile = req.body;
             const result = await mobilesCollection.insertOne(mobile);
             res.json(result);
         })
-        // DELETING mobile DATA
+   
         app.delete('/mobiles/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -88,44 +79,30 @@ async function run() {
             res.json(result);
         })
 
-        /////////////////////////////////
-
-
-        // REVIEW API HANDLING //
-
-
-        // GETTING REVIEW DATA
         app.get('/reviews', async (req, res) => {
             const cursor = reviewsCollection.find({});
             const reviews = await cursor.toArray();
             res.send(reviews);
         })
-        // ADDIND REVIEW DATA
+
         app.post('/reviews', async (req, res) => {
             const review = req.body;
             const result = await reviewsCollection.insertOne(review);
             res.json(result);
         })
-        //////////////////////////////////
 
-
-        // ALL ORDERS API HANDLING //
-
-
-        // GETTING ORDERS
         app.get('/allOrders', async (req, res) => {
             const cursor = allOrdersCollection.find({});
             const allOrders = await cursor.toArray();
             res.send(allOrders);
         })
 
-        // POSTING ORDERS
         app.post('/allOrders', async (req, res) => {
             const allOrders = req.body;
             const result = await allOrdersCollection.insertOne(allOrders);
             res.json(result);
         })
-        // UPDATING ALL ORDERS
+
         app.put('/allOrders/:id', async (req, res) => {
             const id = req.params.id;
             const updatedAllOrders = req.body;
@@ -139,7 +116,7 @@ async function run() {
             const result = await allOrdersCollection.updateOne(filter, updateDoc, options)
             res.json(result)
         })
-        // DELETING AN ORDER
+
         app.delete('/allOrders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -147,10 +124,10 @@ async function run() {
             res.json(result);
         })
 
-        ///////////////////////////////////////
+
     }
     finally {
-        // await client.close();
+
     }
 }
 run().catch(console.dir);

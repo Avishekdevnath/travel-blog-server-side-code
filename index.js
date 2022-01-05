@@ -18,9 +18,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const database = client.db("dhoom");
+        const database = client.db("mobilepoint");
         const reviewsCollection = database.collection("reviews");
-        const bikesCollection = database.collection("bikes");
+        const mobilesCollection = database.collection("mobiles");
         const allOrdersCollection = database.collection("allOrders");
         const usersCollection = database.collection("users");
 
@@ -58,33 +58,33 @@ async function run() {
         //////////////////////////////////
 
 
-        // BIKES API HANDLING //
+        // mobileS API HANDLING //
 
 
-        // GETTING BIKES DATA
-        app.get('/bikes', async (req, res) => {
-            const cursor = bikesCollection.find({});
-            const bikes = await cursor.toArray();
-            res.send(bikes);
+        // GETTING mobileS DATA
+        app.get('/mobiles', async (req, res) => {
+            const cursor = mobilesCollection.find({});
+            const mobiles = await cursor.toArray();
+            res.send(mobiles);
         })
-        // GETTING SINGLE bike DATA
-        app.get('/bikes/:id', async (req, res) => {
+        // GETTING SINGLE mobile DATA
+        app.get('/mobiles/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const bikes = await bikesCollection.findOne(query);
-            res.send(bikes);
+            const mobiles = await mobilesCollection.findOne(query);
+            res.send(mobiles);
         })
-        // POST BIKE DATA
-        app.post('/bikes', async (req, res) => {
-            const bike = req.body;
-            const result = await bikesCollection.insertOne(bike);
+        // POST mobile DATA
+        app.post('/mobiles', async (req, res) => {
+            const mobile = req.body;
+            const result = await mobilesCollection.insertOne(mobile);
             res.json(result);
         })
-        // DELETING BIKE DATA
-        app.delete('/bikes/:id', async (req, res) => {
+        // DELETING mobile DATA
+        app.delete('/mobiles/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await bikesCollection.deleteOne(query);
+            const result = await mobilesCollection.deleteOne(query);
             res.json(result);
         })
 

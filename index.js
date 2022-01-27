@@ -17,9 +17,9 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const database = client.db("mobilepoint");
+        const database = client.db("travel-blog");
         const reviewsCollection = database.collection("reviews");
-        const mobilesCollection = database.collection("mobiles");
+        const blogsCollection = database.collection("blogs");
         const allOrdersCollection = database.collection("allOrders");
         const usersCollection = database.collection("users");
 
@@ -53,29 +53,29 @@ async function run() {
 
 
 
-        app.get('/mobiles', async (req, res) => {
-            const cursor = mobilesCollection.find({});
-            const mobiles = await cursor.toArray();
-            res.send(mobiles);
+        app.get('/blogs', async (req, res) => {
+            const cursor = blogsCollection.find({});
+            const blogs = await cursor.toArray();
+            res.send(blogs);
         })
 
-        app.get('/mobiles/:id', async (req, res) => {
+        app.get('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const mobiles = await mobilesCollection.findOne(query);
-            res.send(mobiles);
+            const blogs = await blogsCollection.findOne(query);
+            res.send(blogs);
         })
 
-        app.post('/mobiles', async (req, res) => {
-            const mobile = req.body;
-            const result = await mobilesCollection.insertOne(mobile);
+        app.post('/blogs', async (req, res) => {
+            const blog = req.body;
+            const result = await blogsCollection.insertOne(blog);
             res.json(result);
         })
    
-        app.delete('/mobiles/:id', async (req, res) => {
+        app.delete('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await mobilesCollection.deleteOne(query);
+            const result = await blogsCollection.deleteOne(query);
             res.json(result);
         })
 

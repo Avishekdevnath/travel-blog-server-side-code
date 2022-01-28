@@ -18,9 +18,7 @@ async function run() {
     try {
         await client.connect();
         const database = client.db("travel-blog");
-        const reviewsCollection = database.collection("reviews");
         const blogsCollection = database.collection("blogs");
-        const allOrdersCollection = database.collection("allOrders");
         const usersCollection = database.collection("users");
 
 
@@ -52,13 +50,28 @@ async function run() {
         })
 
 
-
+        // getting blogs
         app.get('/blogs', async (req, res) => {
             const cursor = blogsCollection.find({});
-            const blogs = await cursor.toArray();
-            res.send(blogs);
-        })
+            const page = req.query.page;
+            const size = parseInt(req.query.size);
+            let blogs;
+            const count = await cursor.count();
 
+            if (page) {
+                blogs = await cursor.skip(page * size).limit(size).toArray();
+            }
+            else {
+                blogs = await cursor.toArray();
+            }
+
+            res.send({
+                count,
+                blogs
+            });
+        });
+
+        // getting single blogs
         app.get('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -66,65 +79,54 @@ async function run() {
             res.send(blogs);
         })
 
+        // adding new blogs
         app.post('/blogs', async (req, res) => {
             const blog = req.body;
             const result = await blogsCollection.insertOne(blog);
             res.json(result);
         })
-   
+
+        // updating single blogs status
+        app.put('/blogs/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedBlogStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    status: updatedBlogStatus.status,
+                },
+            };
+            const result = await blogsCollection.updateOne(filter, updateDoc, options)
+            res.json(result)
+        })
+
+        // // Updating whole blogs
+        // // UPDATING USERS DATA
+        // app.put('/blogs/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const data = req.body;
+        //     console.log(req.body);
+        //     const { name, authorInfo, picture, category, rating, price, date, time, transportation, location, shortDescription, description } = data;
+        //     console.log(data);
+        //     const filter = { _id: ObjectId(id) };
+        //     const options = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             name, authorInfo, picture, category, rating, price, date, time, transportation, location, shortDescription, description
+        //         },
+        //     };
+        //     const result = await blogsCollection.updateOne(filter, updateDoc, options)
+        //     res.json(result)
+        // })
+
+        // deleting blogs
         app.delete('/blogs/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await blogsCollection.deleteOne(query);
             res.json(result);
         })
-
-        app.get('/reviews', async (req, res) => {
-            const cursor = reviewsCollection.find({});
-            const reviews = await cursor.toArray();
-            res.send(reviews);
-        })
-
-        app.post('/reviews', async (req, res) => {
-            const review = req.body;
-            const result = await reviewsCollection.insertOne(review);
-            res.json(result);
-        })
-
-        app.get('/allOrders', async (req, res) => {
-            const cursor = allOrdersCollection.find({});
-            const allOrders = await cursor.toArray();
-            res.send(allOrders);
-        })
-
-        app.post('/allOrders', async (req, res) => {
-            const allOrders = req.body;
-            const result = await allOrdersCollection.insertOne(allOrders);
-            res.json(result);
-        })
-
-        app.put('/allOrders/:id', async (req, res) => {
-            const id = req.params.id;
-            const updatedAllOrders = req.body;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: {
-                    status: updatedAllOrders.status,
-                },
-            };
-            const result = await allOrdersCollection.updateOne(filter, updateDoc, options)
-            res.json(result)
-        })
-
-        app.delete('/allOrders/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
-            const result = await allOrdersCollection.deleteOne(query);
-            res.json(result);
-        })
-
-
     }
     finally {
 
